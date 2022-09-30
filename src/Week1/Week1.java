@@ -1,12 +1,12 @@
 package Week1;
 
 import helpers.InputReader;
-public class Week1 
-{
+public class  
+{ 
     public static final String CONSOLE_CLEAR = "\033[H\033[2J";
     public static void main(String[] args)
     {
-        System.out.println(CONSOLE_CLEAR);
+        System.out.println(CONSOLE_CLEAR)
 
         System.out.println("==================================");
         System.out.println("CO452 Programming Concepts 2022/23");
