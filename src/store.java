@@ -1,32 +1,45 @@
 import java.util.ArrayList;
-class song {
-    String songName;
-    String songArtist;
-    String playCount;
+class Student {
+    String sName;
+    int sID;
+    Course sCourse;
     
-    public song(String sName, String sArtist, String pCount) { //constructor
-        this.songName = sName;
-        this.songArtist = sArtist;
-        this.playCount = pCount;
+    public Student(String name, int ID) { //constructor
+        this.sName = name;
+        this.sID = ID;
+    }
+    void enroll(Course course) {
+        this.sCourse = course;
+         this.display();
     }
     public void display() {
-        System.out.print("name: "+ this.songName);
-        System.out.print(" artist: "+ this.songArtist);
-        System.out.print(" play count: "+ this.playCount + "\n");
+        System.out.println("Student Info:");
+        System.out.println("  Name: "+ this.sName);
+        System.out.println("  ID: "+ this.sID);
+        System.out.println("  Course code: "+ this.sCourse.cCode);
+        System.out.println("  Course name: "+ this.sCourse.cName);
+    }
+}
+class Course {
+    String cCode;
+    String cName;
+    
+    public Course(String code, String name) { //constructor
+        this.cCode = code;
+        this.cName = name;
+    }
+    public void display() {
+        System.out.println("Course Info:");
+        System.out.println("  Code: "+ this.cCode);
+        System.out.println("  Name: "+ this.cName);
     }
 }
 public class store {
     public static void main(String[] args) throws Exception{
-        ArrayList<song> songs = new ArrayList<song>();
-        songs.add(new song("test1","test2","test3"));
-
-        //display all songs
-        for (int i = 0; i < songs.size(); i++) {
-            songs.get(i).display();
-        }
-        //add song
-
-        
-        //remove song
+        ArrayList<Student> students = new ArrayList<Student>();
+        students.add(new Student("Lukas", 22211466));
+        ArrayList<Course> courses = new ArrayList<Course>();
+        courses.add(new Course("CO452-22S1", "Programming Concepts"));
+        students.get(0).enroll(courses.get(0));
     }
 }
