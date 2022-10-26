@@ -3,9 +3,9 @@ class song {
     String sName;
     String sArtist;
     long sPlaycount; // top songs have playcount over 'int' range
-    public song(String name, String artist, long playCount) { // constructor
-        this.sName = name;
-        this.sArtist = artist;                                                        
+    public song(String artist, String name, long playCount) { // constructor
+        this.sArtist = artist;
+        this.sName = name;                                                        
         this.sPlaycount = playCount;
     }
 }
@@ -22,9 +22,9 @@ class manager {
         System.out.println("1. ID");
         System.out.println("2. Name");
         System.out.println("3. Artist (removes all songs by artist name)");
-        switch (manager.readLine()) {
+        switch (manager.readLine("")) {
             case "1":
-                int usrRemoveID = Character.getNumericValue(manager.readLine().charAt(0));
+                int usrRemoveID = Integer.parseInt(manager.readLine("Song ID: "));
                 System.out.println(usrRemoveID);
                 if (usrRemoveID > 0 && usrRemoveID <= songs.size()) {
                     songs.remove(usrRemoveID - 1);
@@ -34,20 +34,71 @@ class manager {
                     manager.remove(songs);
                 }
                 break;
+            case "2":
+                String usrRemoveName = manager.readLine("Song name: ").toLowerCase();
+                boolean songFound = false;
+                for (int i = 0; i < songs.size(); i++) {
+                    if (songs.get(i).sName.toLowerCase().equals(usrRemoveName)) {
+                        songs.remove(i);
+                        songFound = true;
+                    }
+                }
+                if (!songFound) {
+                    System.out.println(usrRemoveName + " not found");
+                    manager.remove(songs);
+                } else {
+                    System.out.println(usrRemoveName + " removed");
+                }
+            case "3":
+                String usrRemoveArtist = manager.readLine("Song artist: ").toLowerCase();
+                int songsRemoved = 0;
+                for (int i = 0; i < songs.size(); i++) {
+                    if (songs.get(i).sArtist.toLowerCase().equals(usrRemoveArtist)) {
+                        songs.remove(i);
+                        i--; 
+                        /*
+                        'songs.remove() will change the size of the array when an
+                        element in removed, therefore if there are more than 1 song
+                        with the same artist, push the index back by one incase if the following
+                        song has the same artist as 'songs.get()' will fetch the new array
+                        */
+                        songsRemoved++;
+                    }
+                }
+                if (songsRemoved == 0) {
+                    System.out.println("No songs found from artist: " + usrRemoveArtist);
+                    manager.remove(songs);
+                } else {
+                    System.out.println(songsRemoved + " songs removed from " + usrRemoveArtist);
+                }
+                break;
+            default:
+                manager.clear();
+                System.out.println("Invalid option");
+                manager.remove(songs);
+                
         }
         return songs;
     }
     public static void display(ArrayList<song> songs) {
-        System.out.format(format, "ID", "Name", "Artist", "Play count");
+        ArrayList<song> sortedSongs = new ArrayList<song>();
         for (int i = 0; i < songs.size(); i++) {
-            System.out.format(format, i + 1, songs.get(i).sName, songs.get(i).sArtist, songs.get(i).sPlaycount);
+            int sChar = songs.get(i).sArtist.charAt(0);
+            System.out.println(sChar);
         }
+        /*
+        System.out.format(format, "ID", "Artist", "Name", "Play count");
+        for (int i = 0; i < songs.size(); i++) {
+            System.out.format(format, i + 1, songs.get(i).sArtist, songs.get(i).sName, songs.get(i).sPlaycount);
+        }
+        */
     }
     public static void clear() { // not sure if this works with all terminals
         System.out.print("\033[H\033[2J");  
         System.out.flush();   
     }
-    public static String readLine() {
+    public static String readLine(String msg) {
+        System.out.print(msg.length() == 0 ? "Input: " : msg);
         return System.console().readLine();
     }
 }
@@ -56,35 +107,16 @@ public class Main{
     public static String welcomeMsg(String[] msg) {
         return msg.length == 0 ? "Welcome to Song manager" : msg[0];
     }
-    public static void check(Class<?> cls) {
-        switch ((String)cls.getClass().getSimpleName()) {
-            case "char":
-                System.out.println("char");
-                break;
-            case "int":
-                System.out.println("int");
-                break;
-            case "byte":
-            case "long":
-            case "double":
-            case "boolean":
-            case "short":
-            case "float":
-            default: //String
-                System.out.println(cls);   
-        }
-    }
      public static void main(String ...args) {
-         check(Array.class);
          System.out.println(welcomeMsg(args));
          System.out.println("Song manager menu\n");
          System.out.println("1. Add song");
          System.out.println("2. Remove song");
          System.out.println("3. View song(s)");
          System.out.println("4. Quit");
-         switch (manager.readLine()) {
+         switch (manager.readLine("")) {
             case "1":
-                System.out.println("Enter the song with format being 'name-artist-playcount'");
+                System.out.println("Enter the song with format being 'artist-name-playcount'");
                 String usrSong = System.console().readLine();
                 String[] usrSongInfo = usrSong.split("-");
                 if (usrSongInfo.length != 3) main("Invalid format provided");
@@ -117,10 +149,10 @@ public class Main{
         String baseSongs[] = retrieveBaseSongs().split("\r?\\n");
         for (int i = 0; i < baseSongs.length; i++) {
             String song[] = baseSongs[i].split("-");
-            String name = song[0];
-            String artist = song[1];
+            String artist = song[0];
+            String name = song[1];
             Long playcount = Long.parseLong(song[2].replace(",",""));
-            songs.add(new song(name, artist, playcount));
+            songs.add(new song(artist, name, playcount));
         }  
     }
     public static String retrieveBaseSongs() {
