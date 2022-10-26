@@ -1,4 +1,11 @@
 import java.util.*;
+/**
+ * Class for storing song information.
+ *
+ * @param artist Name of artist.
+ * @param name Name of song.
+ * @param long Play count of song.
+ */
 class song {
     String sName;
     String sArtist;
@@ -9,21 +16,34 @@ class song {
         this.sPlaycount = playCount;
     }
 }
+/**
+ * Class for core functions.
+ */
 class manager {
-    private static final String format = "|%1$-2s|%2$-20s|%3$-20s|%4$-10s|\n";
+    private static final String format = "|%1$-2s|%2$-20s|%3$-20s|%4$-10s|\n"; // Formatting expression to pretty print tables
+/**
+    * Add a song
+    *
+    * @param songs The ArrayList of songs
+    * @return ArrayList with the added song
+*/
     public static ArrayList<song> add(ArrayList<song> songs, String[] usrAddSong) {
         songs.add(new song(usrAddSong[0], usrAddSong[1], Long.parseLong(usrAddSong[2])));
         System.out.println("Song added");
         return songs;
     }
+/**
+    * Remove a song
+    *
+    * @return ArrayList with the removed song
+*/
     public static ArrayList<song> remove(ArrayList<song> songs) {
-        manager.display(songs);
         System.out.println("Remove by :");
         System.out.println("1. ID");
         System.out.println("2. Name");
         System.out.println("3. Artist (removes all songs by artist name)");
         switch (manager.readLine("")) {
-            case "1":
+            case "1": // Remove by ID
                 int usrRemoveID = Integer.parseInt(manager.readLine("Song ID: "));
                 System.out.println(usrRemoveID);
                 if (usrRemoveID > 0 && usrRemoveID <= songs.size()) {
@@ -34,7 +54,7 @@ class manager {
                     manager.remove(songs);
                 }
                 break;
-            case "2":
+            case "2": // Remove by name
                 String usrRemoveName = manager.readLine("Song name: ").toLowerCase();
                 boolean songFound = false;
                 for (int i = 0; i < songs.size(); i++) {
@@ -49,7 +69,7 @@ class manager {
                 } else {
                     System.out.println(usrRemoveName + " removed");
                 }
-            case "3":
+            case "3": // Remove by artist
                 String usrRemoveArtist = manager.readLine("Song artist: ").toLowerCase();
                 int songsRemoved = 0;
                 for (int i = 0; i < songs.size(); i++) {
@@ -72,7 +92,7 @@ class manager {
                     System.out.println(songsRemoved + " songs removed from " + usrRemoveArtist);
                 }
                 break;
-            default:
+            default: // Invalid option so start again
                 manager.clear();
                 System.out.println("Invalid option");
                 manager.remove(songs);
@@ -80,15 +100,20 @@ class manager {
         }
         return songs;
     }
-    /*
-    My attempt of implementing Radix LSD sort
-    */
-    public static int[] sort(int[] chars, int bitIndex) {
-        int j = 0, z = 0, h = 0;
-        int[][] buckets = new int[2][];
+/**
+    * My attempt of implementng Radix Sort LSD (least significant digit)
+    * 
+    * @param chars unsorted song
+    * @param bitStart position of starting bit sorted
+    * @param bitEnd position of ending bit to be sorted
+    * @return sorted song array
+*/
+    public static int[] sort(int[] chars, int bitStart, int bitEnd) {
+        int zeroBits = 0, oneBits = 0; // Keep track of bit states
         /* 
         Initiliase buckets
         */
+        int[][] buckets = new int[2][]; // Base 2
         for (int i = 0; i < buckets.length; i++) 
             buckets[i] = new int[chars.length];
         
@@ -96,58 +121,119 @@ class manager {
         Get bit status and add it to respective bucket
         */
         for (int i = 0; i < chars.length; i++) 
-            buckets[(chars[i] >> bitIndex) & 1][(((chars[i] >> bitIndex) & 1) > 0) ? z++ : j++] = chars[i];
+            buckets[(chars[i] >> bitStart) & 1][(((chars[i] >> bitStart) & 1) > 0) ? oneBits++ : zeroBits++] = chars[i];
         
         /*
         Instead of creating a new sorted array, use the existing
         0 bit array and append the rest of the empty values from 
         the 1 bit array. This will use less memory.
         */
-        for (int i = chars.length - z, k = 0; i < chars.length; i++)
+        for (int i = chars.length - oneBits, k = 0; i < chars.length; i++)
             buckets[0][i] = buckets[1][k++];
             
         /*
         Return sorted array recursively
-        I will only use ASCII codes for this function therefore we will
-        only need to go to 8 bits which then the whole array is sorted.
         */
-        return bitIndex == 7 ? buckets[0] : sort(buckets[0], ++bitIndex);
+        return bitStart == bitEnd ? buckets[0] : sort(buckets[0], ++bitStart, bitEnd);
     }
+    /**
+    * Display a song
+    *
+    * @param songs The ArrayList of songs
+*/
     public static void display(ArrayList<song> songs) {
-        manger.display
-        int test[] = {69, 84, 69, 76, 84, 76, 80, 80, 76, 66};
-        int[] sortedSongs = new int[songs.size()];
-        for (int i = 0; i < songs.size(); i++) {
-            int sChar = songs.get(i).sArtist.charAt(0);
-            sortedSongs[i] = (i << 8) | sChar;
-        }
-        sortedSongs = manager.sort(sortedSongs, 0);
-        for (int i = 0; i < sortedSongs.length; i++) {
-            //System.out.print((sortedSongs[i] >> 8) + " ");
-            //System.out.println((sortedSongs[i] & 0xFF) + " ");
-            System.out.println(songs.get(sortedSongs[i] >> 8).sArtist);
-        }
-        /*
+        System.out.println("Display by: ");
+        System.out.println("1. Time added");
+        System.out.println("2. Name");
+        System.out.println("3. Artist");
+        System.out.println("4. Play count");
+        String usrInput = manager.readLine("");
+        switch (usrInput) {
+            case "1": // normal format
+                System.out.format(format, "ID", "Artist", "Name", "Play count");
+                for (int i = 0; i < songs.size(); i++)
+                    System.out.format(format, i + 1, songs.get(i).sArtist, songs.get(i).sName, songs.get(i).sPlaycount);
+                break;
+            case "2":
+            case "3": // name/artist format
+                int[] sortedSongs = new int[songs.size()];
+                for (int i = 0; i < songs.size(); i++) {
+                    String sortType = usrInput.equals("2") ? songs.get(i).sName : songs.get(i).sArtist;
+                    int sChar = sortType.toLowerCase().charAt(0);
+                    sortedSongs[i] = (i << 8) | sChar;
+                }
+                sortedFormat(songs, manager.sort(sortedSongs, 0, 7));
+                break;
+            case "4": // playcount format
+                /*
+                long playcounts into into
+                */
+                break;
+        } 
+    }
+    /*
+    Format songs into a table
+    @param 
+    */
+    public static void sortedFormat(ArrayList<song> songs, int[] sortedIndex) {
         System.out.format(format, "ID", "Artist", "Name", "Play count");
         for (int i = 0; i < songs.size(); i++) {
-            System.out.format(format, i + 1, songs.get(i).sArtist, songs.get(i).sName, songs.get(i).sPlaycount);
+            int ID = sortedIndex[i] >> 8;
+            System.out.format(format, ID + 1, songs.get(ID).sArtist, songs.get(ID).sName, songs.get(ID).sPlaycount);
         }
-        */
     }
+    /**
+    * Base songs to be added to the ArrayList
+    *
+    * @return list of base songs
+*/
+    public static String retrieveBaseSongs() {
+    return 
+    "Ed Sheeran-Shape of You-3,746,122,511\n" +
+    "The Weeknd-Blinding Lights-3,288,094,770\n" +
+    "Ed Sheeran-Perfect-3,224,789,370\n" +
+    "Luis Fonsi-Despacito-3,112,243,015\n" +
+    "Tones And I-Dance Monkey-2,719,548,764\n" +
+    "Lewis Capaldi-Someone You Loved-2,609,765,817\n" +
+    "Post Malone-rockstar-2,569,898,717\n" +
+    "Post Malone-Sunflower SpiderMan-2,500,482,535\n" +
+    "Lil Nas X-Old Town Road-2,490,171,174\n" +
+    "Billie Eilish-bad guy-2,480,025,293\n";
+}
+/**
+    * Clear console/terminal
+*/
     public static void clear() { // not sure if this works with all terminals
         System.out.print("\033[H\033[2J");  
         System.out.flush();   
     }
+    /**
+    * Read line as a user input
+    *
+    * @param message to outputted
+    * @return line inputted as String
+*/
     public static String readLine(String msg) {
         System.out.print(msg.length() == 0 ? "Input: " : msg);
         return System.console().readLine();
     }
 }
 public class Main{
-    static ArrayList<song> songs = new ArrayList<song>();
+    static ArrayList<song> songs = new ArrayList<song>(); // Main songs store
+    /**
+    * Custom welcome message
+    *
+    * @param message to be outputted if theres no message provided then output default message
+    * @return welcome message
+*/
     public static String welcomeMsg(String[] msg) {
         return msg.length == 0 ? "Welcome to Song manager" : msg[0];
     }
+    /**
+    * main method
+    *
+    * @param String array
+*/
      public static void main(String ...args) {
          System.out.println(welcomeMsg(args));
          System.out.println("Song manager menu\n");
@@ -156,7 +242,7 @@ public class Main{
          System.out.println("3. View song(s)");
          System.out.println("4. Quit");
          switch (manager.readLine("")) {
-            case "1":
+            case "1": // Add song
                 System.out.println("Enter the song with format being 'artist-name-playcount'");
                 String usrSong = System.console().readLine();
                 String[] usrSongInfo = usrSong.split("-");
@@ -169,25 +255,31 @@ public class Main{
                     main("Play count provided was not a number");
                 }
                 break;
-            case "2":
+            case "2": // Remove song
                 songs = manager.remove(songs);
                 main();
                 break;
-            case "3":
+            case "3": // Display song
                 manager.display(songs);
                 main();
                 break;
-            case "4":
+            case "4": // Exit program
                 System.exit(0);
                 break;
-            default:
+            default: // Invalid option try again
                 manager.clear();
                 main("Invalid option provided\nPlease try again");
                 break;
          }
      }
+/**
+    * Initialiser function
+    *
+    * This function will be ran first even before main() so here
+    * we can set the base songs that are needed.
+*/
     static { //Initiliase base songs 
-        String baseSongs[] = retrieveBaseSongs().split("\r?\\n");
+        String baseSongs[] = manager.retrieveBaseSongs().split("\r?\\n");
         for (int i = 0; i < baseSongs.length; i++) {
             String song[] = baseSongs[i].split("-");
             String artist = song[0];
@@ -195,18 +287,5 @@ public class Main{
             Long playcount = Long.parseLong(song[2].replace(",",""));
             songs.add(new song(artist, name, playcount));
         }  
-    }
-    public static String retrieveBaseSongs() {
-        return 
-        "Ed Sheeran-Shape of You-3,746,122,511\n" +
-        "The Weeknd-Blinding Lights-3,288,094,770\n" +
-        "Ed Sheeran-Perfect-3,224,789,370\n" +
-        "Luis Fonsi-Despacito-3,112,243,015\n" +
-        "Tones And I-Dance Monkey-2,719,548,764\n" +
-        "Lewis Capaldi-Someone You Loved-2,609,765,817\n" +
-        "Post Malone-rockstar-2,569,898,717\n" +
-        "Post Malone-Sunflower SpiderMan-2,500,482,535\n" +
-        "Lil Nas X-Old Town Road-2,490,171,174\n" +
-	    "Billie Eilish-bad guy-2,480,025,293\n";
     }
 }
