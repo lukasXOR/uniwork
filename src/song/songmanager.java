@@ -1,3 +1,11 @@
+/******************************************************************************
+
+                            Online Java Compiler.
+                Code, Compile, Run and Debug java program online.
+Write your code in this editor and press "Run" button to execute it.
+
+*******************************************************************************/
+
 import java.util.*;
 class song {
     String sName;
@@ -81,29 +89,51 @@ class manager {
         return songs;
     }
     /*
-    radix sort LSD
+    My attempt of implementing Radix LSD sort
     */
     public static int[] sort(int[] chars, int bitIndex) {
         int j = 0, z = 0, h = 0;
         int[][] buckets = new int[2][];
+        /* 
+        Initiliase buckets
+        */
         for (int i = 0; i < buckets.length; i++) 
             buckets[i] = new int[chars.length];
+        
+        /*
+        Get bit status and add it to respective bucket
+        */
         for (int i = 0; i < chars.length; i++) 
             buckets[(chars[i] >> bitIndex) & 1][(((chars[i] >> bitIndex) & 1) > 0) ? z++ : j++] = chars[i];
+        
+        /*
+        Instead of creating a new sorted array, use the existing
+        0 bit array and append the rest of the empty values from 
+        the 1 bit array. This will use less memory.
+        */
         for (int i = chars.length - z, k = 0; i < chars.length; i++)
             buckets[0][i] = buckets[1][k++];
+            
+        /*
+        Return sorted array recursively
+        I will only use ASCII codes for this function therefore we will
+        only need to go to 8 bits which then the whole array is sorted.
+        */
         return bitIndex == 7 ? buckets[0] : sort(buckets[0], ++bitIndex);
     }
     public static void display(ArrayList<song> songs) {
+        manger.display
         int test[] = {69, 84, 69, 76, 84, 76, 80, 80, 76, 66};
-        test = manager.sort(test, 0);
-        for (int i = 0; i < test.length; i++) {
-            System.out.print(test[i] + " ");
-        }
-        ArrayList<song> sortedSongs = new ArrayList<song>();
+        int[] sortedSongs = new int[songs.size()];
         for (int i = 0; i < songs.size(); i++) {
             int sChar = songs.get(i).sArtist.charAt(0);
-            //System.out.println(sChar);
+            sortedSongs[i] = (i << 8) | sChar;
+        }
+        sortedSongs = manager.sort(sortedSongs, 0);
+        for (int i = 0; i < sortedSongs.length; i++) {
+            //System.out.print((sortedSongs[i] >> 8) + " ");
+            //System.out.println((sortedSongs[i] & 0xFF) + " ");
+            System.out.println(songs.get(sortedSongs[i] >> 8).sArtist);
         }
         /*
         System.out.format(format, "ID", "Artist", "Name", "Play count");
