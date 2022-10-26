@@ -23,18 +23,16 @@ public class manager {
     public static ArrayList<song> remove(ArrayList<song> songs) {
         switch (utility.createMenu("Remove by: ", "ID", "Name", "Artist (remove all songs by artist name)")) {
             case "1": // Remove by ID
-                int usrRemoveID = 0;
                 try {
-                    usrRemoveID = Integer.parseInt(utility.createMenu("Song ID: "));
+                    int usrRemoveID = Integer.parseInt(utility.createMenu("Song ID: "));
+                    if (usrRemoveID > 0 && usrRemoveID <= songs.size()) {
+                        songs.remove(usrRemoveID - 1);
+                    } else {
+                        utility.readLine(usrRemoveID + " Song ID doesnt exist\nPress enter to try again");
+                        manager.remove(songs);
+                    }
                 } catch (Exception NumberFormatException) {
                     utility.readLine("Invalid option\nPress enter to try again");
-                    manager.remove(songs);
-                }
-                System.out.println(usrRemoveID);
-                if (usrRemoveID > 0 && usrRemoveID <= songs.size()) {
-                    songs.remove(usrRemoveID - 1);
-                } else {
-                    utility.readLine("Song ID doesnt exist\nPress enter to try again");
                     manager.remove(songs);
                 }
                 break;
@@ -150,6 +148,7 @@ public class manager {
                             manager.display(songs);
                         }
                         // Checks passed... filter songs
+                        utility.clear();
                         System.out.format(utility.format, "ID", "Artist", "Name", "Play count");
                         int songIndex = 0;
                         boolean songAppended = false;
