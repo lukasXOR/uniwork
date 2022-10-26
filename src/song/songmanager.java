@@ -80,11 +80,30 @@ class manager {
         }
         return songs;
     }
+    /*
+    radix sort LSD
+    */
+    public static int[] sort(int[] chars, int bitIndex) {
+        int j = 0, z = 0, h = 0;
+        int[][] buckets = new int[2][];
+        for (int i = 0; i < buckets.length; i++) 
+            buckets[i] = new int[chars.length];
+        for (int i = 0; i < chars.length; i++) 
+            buckets[(chars[i] >> bitIndex) & 1][(((chars[i] >> bitIndex) & 1) > 0) ? z++ : j++] = chars[i];
+        for (int i = chars.length - z, k = 0; i < chars.length; i++)
+            buckets[0][i] = buckets[1][k++];
+        return bitIndex == 7 ? buckets[0] : sort(buckets[0], ++bitIndex);
+    }
     public static void display(ArrayList<song> songs) {
+        int test[] = {69, 84, 69, 76, 84, 76, 80, 80, 76, 66};
+        test = manager.sort(test, 0);
+        for (int i = 0; i < test.length; i++) {
+            System.out.print(test[i] + " ");
+        }
         ArrayList<song> sortedSongs = new ArrayList<song>();
         for (int i = 0; i < songs.size(); i++) {
             int sChar = songs.get(i).sArtist.charAt(0);
-            System.out.println(sChar);
+            //System.out.println(sChar);
         }
         /*
         System.out.format(format, "ID", "Artist", "Name", "Play count");
