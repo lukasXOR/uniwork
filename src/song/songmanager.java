@@ -10,28 +10,45 @@ class song {
     }
 }
 class manager {
-    private static final String format = "|%1$-20s|%2$-20s|%3$-15s|\n";
+    private static final String format = "|%1$-2s|%2$-20s|%3$-20s|%4$-10s|\n";
     public static ArrayList<song> add(ArrayList<song> songs, String[] usrAddSong) {
         songs.add(new song(usrAddSong[0], usrAddSong[1], Long.parseLong(usrAddSong[2])));
         System.out.println("Song added");
         return songs;
     }
-    public static void remove() {
-        manager.clear();
-        System.out.println("Remove by :")
-        System.out.println("1. Index")
-        System.out.println("2. Name")
-        System.out.println("3. Artist (removes all songs by artist name)")
+    public static ArrayList<song> remove(ArrayList<song> songs) {
+        manager.display(songs);
+        System.out.println("Remove by :");
+        System.out.println("1. ID");
+        System.out.println("2. Name");
+        System.out.println("3. Artist (removes all songs by artist name)");
+        switch (manager.readLine()) {
+            case "1":
+                int usrRemoveID = Character.getNumericValue(manager.readLine().charAt(0));
+                System.out.println(usrRemoveID);
+                if (usrRemoveID > 0 && usrRemoveID <= songs.size()) {
+                    songs.remove(usrRemoveID - 1);
+                    System.out.println("Song ID: " + usrRemoveID + " removed");
+                } else {
+                    System.out.println("Input out of range");
+                    manager.remove(songs);
+                }
+                break;
+        }
+        return songs;
     }
     public static void display(ArrayList<song> songs) {
-        System.out.format(format, "Name", "Artist", "Play count");
-         for (song s: songs) {
-            System.out.format(format, s.sName, s.sArtist, s.sPlaycount);
-         }
+        System.out.format(format, "ID", "Name", "Artist", "Play count");
+        for (int i = 0; i < songs.size(); i++) {
+            System.out.format(format, i + 1, songs.get(i).sName, songs.get(i).sArtist, songs.get(i).sPlaycount);
+        }
     }
     public static void clear() { // not sure if this works with all terminals
         System.out.print("\033[H\033[2J");  
         System.out.flush();   
+    }
+    public static String readLine() {
+        return System.console().readLine();
     }
 }
 public class Main{
@@ -39,15 +56,34 @@ public class Main{
     public static String welcomeMsg(String[] msg) {
         return msg.length == 0 ? "Welcome to Song manager" : msg[0];
     }
+    public static void check(Class<?> cls) {
+        switch ((String)cls.getClass().getSimpleName()) {
+            case "char":
+                System.out.println("char");
+                break;
+            case "int":
+                System.out.println("int");
+                break;
+            case "byte":
+            case "long":
+            case "double":
+            case "boolean":
+            case "short":
+            case "float":
+            default: //String
+                System.out.println(cls);   
+        }
+    }
      public static void main(String ...args) {
+         check(Array.class);
          System.out.println(welcomeMsg(args));
          System.out.println("Song manager menu\n");
          System.out.println("1. Add song");
          System.out.println("2. Remove song");
          System.out.println("3. View song(s)");
          System.out.println("4. Quit");
-         switch ((int)System.console().readLine().charAt(0)) {
-            case 49: //1
+         switch (manager.readLine()) {
+            case "1":
                 System.out.println("Enter the song with format being 'name-artist-playcount'");
                 String usrSong = System.console().readLine();
                 String[] usrSongInfo = usrSong.split("-");
@@ -60,14 +96,15 @@ public class Main{
                     main("Play count provided was not a number");
                 }
                 break;
-            case 50: //2
-                songs = manager.remove();
+            case "2":
+                songs = manager.remove(songs);
+                main();
                 break;
-            case 51: //3
+            case "3":
                 manager.display(songs);
                 main();
                 break;
-            case 52: //4
+            case "4":
                 System.exit(0);
                 break;
             default:
@@ -76,10 +113,6 @@ public class Main{
                 break;
          }
      }
-     public static void display() {
-        manager.display(songs);
-     }
-     
     static { //Initiliase base songs 
         String baseSongs[] = retrieveBaseSongs().split("\r?\\n");
         for (int i = 0; i < baseSongs.length; i++) {
