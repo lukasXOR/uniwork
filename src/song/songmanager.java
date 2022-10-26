@@ -1,3 +1,11 @@
+/******************************************************************************
+
+                            Online Java Compiler.
+                Code, Compile, Run and Debug java program online.
+Write your code in this editor and press "Run" button to execute it.
+
+*******************************************************************************/
+
 import java.util.*;
 /**
  * Class for storing song information.
@@ -69,6 +77,7 @@ class manager {
                 } else {
                     System.out.println(usrRemoveName + " removed");
                 }
+                break;
             case "3": // Remove by artist
                 String usrRemoveArtist = manager.readLine("Song artist: ").toLowerCase();
                 int songsRemoved = 0;
@@ -156,23 +165,33 @@ class manager {
                 break;
             case "2":
             case "3": // name/artist format
-                int[] sortedSongs = new int[songs.size()];
+                int[] sortedSongNames = new int[songs.size()];
                 for (int i = 0; i < songs.size(); i++) {
                     String sortType = usrInput.equals("2") ? songs.get(i).sName : songs.get(i).sArtist;
                     int sChar = sortType.toLowerCase().charAt(0);
-                    /* encode the song id before the ascii Character
+                    /* 
+                    encode the song id before the ascii Character
                     so we can easily fetch the song id when it is sorted
-                    eg.   --ID-- --char--
-                       ...101001 10100100
+                    eg. -SIGN- -ID- --char--
+                          0    1001 10100100...
                     */
-                    sortedSongs[i] = (i << 8) | sChar;
+                    sortedSongNames[i] = (i << 27) | sChar;
                 }
-                sortedFormat(songs, manager.sort(sortedSongs, 0, 7));
+                sortedFormat(songs, manager.sort(sortedSongNames, 0, 7));
                 break;
             case "4": // playcount format
                 /*
-                long playcounts into into
+                encode the song id alongside the playcount
+                'int' uses 32 bits but the left most bit determines
+                the sign, therefore we must not use this bit and treat 
+                this as a 31 bit number so we dont get negative playcounts
+                -SIGN- -ID-  --playcount--
+                  0    1001  1001001100011...
                 */
+                int[] sortedSongPlays = new int[songs.size()];
+                for (int i = 0; i < songs.size(); i++)
+                    sortedSongPlays[i] = (i << 27) | (int)(songs.get(i).sPlaycount >> 5L);
+                sortedFormat(songs, manager.sort(sortedSongPlays, 0, 26));
                 break;
         } 
     }
@@ -183,7 +202,7 @@ class manager {
     public static void sortedFormat(ArrayList<song> songs, int[] sortedIndex) {
         System.out.format(format, "ID", "Artist", "Name", "Play count");
         for (int i = 0; i < songs.size(); i++) {
-            int ID = sortedIndex[i] >> 8; // Remove the ASCII char (8 bits) which will leave us the ID
+            int ID = (sortedIndex[i] >> 27); 
             System.out.format(format, ID + 1, songs.get(ID).sArtist, songs.get(ID).sName, songs.get(ID).sPlaycount);
         }
     }
