@@ -111,17 +111,17 @@ class manager {
     public static int[] sort(int[] chars, int bitStart, int bitEnd) {
         int zeroBits = 0, oneBits = 0; // Keep track of bit states
         /* 
-        Initiliase buckets
+        Initiliase bases
         */
-        int[][] buckets = new int[2][]; // Base 2
-        for (int i = 0; i < buckets.length; i++) 
-            buckets[i] = new int[chars.length];
+        int[][] base = new int[2][]; // Base 2
+        for (int i = 0; i < base.length; i++) 
+            base[i] = new int[chars.length];
         
         /*
         Get bit status and add it to respective bucket
         */
         for (int i = 0; i < chars.length; i++) 
-            buckets[(chars[i] >> bitStart) & 1][(((chars[i] >> bitStart) & 1) > 0) ? oneBits++ : zeroBits++] = chars[i];
+            base[(chars[i] >> bitStart) & 1][(((chars[i] >> bitStart) & 1) > 0) ? oneBits++ : zeroBits++] = chars[i];
         
         /*
         Instead of creating a new sorted array, use the existing
@@ -129,12 +129,12 @@ class manager {
         the 1 bit array. This will use less memory.
         */
         for (int i = chars.length - oneBits, k = 0; i < chars.length; i++)
-            buckets[0][i] = buckets[1][k++];
+            base[0][i] = base[1][k++];
             
         /*
         Return sorted array recursively
         */
-        return bitStart == bitEnd ? buckets[0] : sort(buckets[0], ++bitStart, bitEnd);
+        return bitStart == bitEnd ? base[0] : sort(base[0], ++bitStart, bitEnd);
     }
     /**
     * Display a song
@@ -160,6 +160,11 @@ class manager {
                 for (int i = 0; i < songs.size(); i++) {
                     String sortType = usrInput.equals("2") ? songs.get(i).sName : songs.get(i).sArtist;
                     int sChar = sortType.toLowerCase().charAt(0);
+                    /* encode the song id before the ascii Character
+                    so we can easily fetch the song id when it is sorted
+                    eg.   --ID-- --char--
+                       ...101001 10100100
+                    */
                     sortedSongs[i] = (i << 8) | sChar;
                 }
                 sortedFormat(songs, manager.sort(sortedSongs, 0, 7));
@@ -178,7 +183,7 @@ class manager {
     public static void sortedFormat(ArrayList<song> songs, int[] sortedIndex) {
         System.out.format(format, "ID", "Artist", "Name", "Play count");
         for (int i = 0; i < songs.size(); i++) {
-            int ID = sortedIndex[i] >> 8;
+            int ID = sortedIndex[i] >> 8; // Remove the ASCII char (8 bits) which will leave us the ID
             System.out.format(format, ID + 1, songs.get(ID).sArtist, songs.get(ID).sName, songs.get(ID).sPlaycount);
         }
     }
