@@ -78,11 +78,24 @@ public class utility {
         "Billie Eilish-bad guy-2,480,025,293\n";
     }
     /**
+        * Custom welcome message
+        *
+        * @param message to be outputted if theres no message provided then output default message
+        * @return welcome message
+    */
+    public static String welcomeMsg(String[] msg) {
+        return msg.length == 0 ? "Welcome to Song manager" : msg[0];
+    }
+    /**
         * Clear console/terminal
     */
     public static void clear() { // not sure if this works with all terminals
         System.out.print("\033[H\033[2J");  
         System.out.flush();   
+        /*
+        * Alternative method
+        * for (int i = 0; i < 50; i++) System.out.println();
+        */
     }
     /**
         * Get the users input while displaying a message
@@ -94,8 +107,7 @@ public class utility {
         return System.console().readLine();
     }
     /**
-        * Create numbers menu with users input
-        *
+        * Create numbered menu with users input
         * @param msg Array of options
         * @return User input from menu
     */
