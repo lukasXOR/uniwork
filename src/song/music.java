@@ -9,21 +9,12 @@ import core.*;
 public class music {
     static ArrayList<song> songs = new ArrayList<song>(); // Main songs store
     /**
-        * Custom welcome message
-        *
-        * @param message to be outputted if theres no message provided then output default message
-        * @return welcome message
-    */
-    public static String welcomeMsg(String[] msg) {
-        return msg.length == 0 ? "Welcome to Song manager" : msg[0];
-    }
-    /**
         * main method
         *
         * @param String array
     */
      public static void main(String ...args) {
-         switch (utility.createMenu(welcomeMsg(args), "Add song", "Remove song", "View song(s)", "Quit")) {
+         switch (utility.createMenu(utility.welcomeMsg(args), "Add song", "Remove song", "View song(s)", "Quit")) {
             case "1": // Add song
                 String usrSong = utility.createMenu("Enter the song with the format 'artist-name-playcount'");
                 String[] usrSongInfo = usrSong.split("-");
