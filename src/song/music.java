@@ -1,5 +1,7 @@
-import java.util.*;
-import core.*;
+package song;
+
+import java.util.ArrayList;
+import song.core.*;
 /**
     * Song manager that emulates basic music streaming features
     * @author lukas

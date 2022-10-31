@@ -1,4 +1,4 @@
-package core;
+package song.core;
 
 /**
  * Class for storing song information.

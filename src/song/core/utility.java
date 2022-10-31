@@ -1,4 +1,4 @@
-package core;
+package song.core;
 import java.util.*;
 /**
     * Class for methods that depend managing the songs 
